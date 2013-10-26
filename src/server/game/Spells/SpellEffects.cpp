@@ -905,6 +905,14 @@ void Spell::EffectTriggerSpell(SpellEffIndex effIndex)
             }
         }
     }
+	
+	// 20131009 - Ryu Aura - Tifón druida, respetar línea de visión.
+	if(triggered_spell_id == 61391)
+	{
+		m_caster->CastSpell(unitTarget,  61391, false);
+		return;
+	}
+	// 20131009 - Ryu Aura - Tifón druida, respetar línea de visión.
 
     // normal case
     SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(triggered_spell_id);

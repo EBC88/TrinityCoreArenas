@@ -2981,6 +2981,19 @@ void SpellMgr::LoadSpellInfoCustomAttributes()
             case 72293: // Mark of the Fallen Champion (Deathbringer Saurfang)
                 spellInfo->AttributesCu |= SPELL_ATTR0_CU_NEGATIVE_EFF0;
                 break;
+			// 20130712 - Ryu Aura - Spell Lock interrupt.
+			case 24259:
+				spellInfo->Speed = 80;
+				break;
+			// 20130712 - Ryu Aura - Spell Lock interrupt.
+			// 20130901 - Ryu Aura - Supresión mágica.
+			// Establece a 0 las cargas del hechizo, para que no se consuma el efecto del talento tras activar caparazón mágico.
+			case 49224:
+			case 49610:
+			case 49611:
+				spellInfo->ProcCharges = 0;
+				break;
+			// 20130901 - Ryu Aura - Supresión mágica.
             default:
                 break;
         }
@@ -3323,6 +3336,11 @@ void SpellMgr::LoadSpellInfoCorrections()
                 spellInfo->Effects[EFFECT_0].TargetB = SpellImplicitTargetInfo();
                 spellInfo->Effects[EFFECT_1].TargetB = SpellImplicitTargetInfo();
                 break;
+			// 20131007 - Ryu Aura - Honor entre ladrones, no meter en combate.
+			case 52916:
+				spellInfo->AttributesEx3 |= SPELL_ATTR3_NO_INITIAL_AGGRO;
+				break;
+			// 20131007 - Ryu Aura - Honor entre ladrones, no meter en combate.
             case 53241: // Marked for Death (Rank 1)
             case 53243: // Marked for Death (Rank 2)
             case 53244: // Marked for Death (Rank 3)

@@ -5558,6 +5558,15 @@ SpellCastResult Spell::CheckCast(bool strict)
             if (!plrCaster->GetComboPoints())
                 return SPELL_FAILED_NO_COMBO_POINTS;
 
+	// 20130712 - Ryu Aura - No permitir mano de protección a objetivo, estando bajo CC.
+	if (m_spellInfo->Id == 1022 || m_spellInfo->Id == 10278 || m_spellInfo->Id == 5599)
+    {
+		if (m_caster)
+			if (!m_caster->CanFreeMove())
+			return SPELL_FAILED_NOT_IN_CONTROL;
+    }
+	// 20130712 - Ryu Aura - No permitir mano de protección a objetivo, estando bajo CC.
+
     // all ok
     return SPELL_CAST_OK;
 }
@@ -6531,6 +6540,15 @@ bool Spell::CheckEffectTarget(Unit const* target, uint32 eff) const
 
             // all ok by some way or another, skip normal check
             break;
+			// 20131009 - Ryu Aura - Furia de las sombras, afectar objetivos en LoS del punto de cast.
+			case SPELL_EFFECT_SCHOOL_DAMAGE:
+			case SPELL_EFFECT_APPLY_AURA:
+			  if (m_spellInfo->Id == 30283)
+				if(target->IsWithinLOS(m_targets.GetDstPos()->GetPositionX(), m_targets.GetDstPos()->GetPositionY(), m_targets.GetDstPos()->GetPositionZ()))
+				  return true;
+				else
+				  return false;
+			// 20131009 - Ryu Aura - Furia de las sombras, afectar objetivos en LoS del punto de cast.
         default:                                            // normal case
             // Get GO cast coordinates if original caster -> GO
             WorldObject* caster = NULL;

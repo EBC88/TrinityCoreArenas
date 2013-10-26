@@ -4642,7 +4642,10 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                 case 52916: // Honor Among Thieves
                     if (target->GetTypeId() == TYPEID_PLAYER)
                         if (Unit* spellTarget = ObjectAccessor::GetUnit(*target, target->ToPlayer()->GetComboTarget()))
-                            target->CastSpell(spellTarget, 51699, true);
+							// 20130710 - Ryu Aura - Honor entre ladrones, aplicar puntos de combo solo al pícaro con el talento.
+							if (target->GetGUID() == aurApp->GetBase()->GetCasterGUID())
+							// 20130710 - Ryu Aura - Honor entre ladrones, aplicar puntos de combo solo al pícaro con el talento.
+								target->CastSpell(spellTarget, 51699, true);
                    break;
                 case 71563:
                     if (Aura* newAura = target->AddAura(71564, target))

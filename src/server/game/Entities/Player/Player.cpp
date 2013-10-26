@@ -16309,6 +16309,13 @@ void Player::KilledPlayerCredit()
         {
             if (qInfo->HasSpecialFlag(QUEST_SPECIAL_FLAGS_PLAYER_KILL))
             {
+				// 20131014 - Ryu Aura - Validar zona en que se mata al oponente, que sea la requerida por la misión.
+				uint32 zona = qInfo->GetZoneOrSort();
+				if(zona!= GetZoneId())
+				{
+					continue;
+				}
+				// 20131014 - Ryu Aura - Validar zona en que se mata al oponente, que sea la requerida por la misión.
                 uint32 reqkill = qInfo->GetPlayersSlain();
                 uint16 curkill = q_status.PlayerCount;
 

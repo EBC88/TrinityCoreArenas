@@ -818,6 +818,11 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
         }
     }
 
+	// 20130831 - WoW Ryu - Corrección para realm latino (usa.wowaura.com).
+	// Se establece como IP de World, la IP registrada en el proceso de autenticación (realmd).
+	m_Address = fields[2].GetCString();
+	// 20130831 - WoW Ryu - Corrección para realm latino (usa.wowaura.com).
+
     id = fields[0].GetUInt32();
 
     k.SetHexStr(fields[1].GetCString());

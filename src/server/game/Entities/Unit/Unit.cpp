@@ -6360,6 +6360,17 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                                     triggered_spell_id = procSpell->IsRankOf(sSpellMgr->GetSpellInfo(635)) ? 53652 : 53654;
                                     break;
                                 }
+								// 20131008 - Ryu Aura - Señal de Luz, curar pet y registrar correctamente origen de la sanación.
+								else if (Pet* pet = member->GetPet())
+								{
+								  if (pet->GetAura(53563, victim->GetGUID()))
+								  {
+									beaconTarget = pet;
+									basepoints0 = int32(damage);
+									triggered_spell_id = procSpell->IsRankOf(sSpellMgr->GetSpellInfo(635)) ? 53652 : 53654;
+								  }
+								}
+								// 20131008 - Ryu Aura - Señal de Luz, curar pet y registrar correctamente origen de la sanación.
                             }
                         }
                     }
@@ -8365,7 +8376,9 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
             target->CastSpell(target, trigger_spell_id, true, castItem, triggeredByAura);
 
             if (cooldown && GetTypeId() == TYPEID_PLAYER)
-                ToPlayer()->AddSpellCooldown(trigger_spell_id, 0, time(NULL) + cooldown);
+				// 20131008 - Ryu Aura - Honor entre ladrones, aplicar efecto un máximo de una vez por segundo.
+				target->ToPlayer()->AddSpellCooldown(trigger_spell_id, 0, time(NULL) + cooldown);
+				// 20131008 - Ryu Aura - Honor entre ladrones, aplicar efecto un máximo de una vez por segundo.
             return true;
         }
         // Cast positive spell on enemy target

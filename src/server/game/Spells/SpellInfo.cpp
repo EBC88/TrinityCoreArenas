@@ -1581,6 +1581,12 @@ SpellCastResult SpellInfo::CheckTarget(Unit const* caster, WorldObject const* ta
             return SPELL_FAILED_BAD_TARGETS;
     }
 
+	// 20131009 - Ryu Aura - Totems, respetar línea de visión.
+	if ((Effects[0].TargetA.GetTarget() == TARGET_SRC_CASTER) & (Effects[0].TargetB.GetTarget() == TARGET_UNIT_SRC_AREA_ENEMY))
+		if (!caster->IsWithinLOSInMap(target))
+			return SPELL_FAILED_LINE_OF_SIGHT;
+	// 20131009 - Ryu Aura - Totems, respetar línea de visión.
+
     // check GM mode and GM invisibility - only for player casts (npc casts are controlled by AI) and negative spells
     if (unitTarget != caster && (caster->IsControlledByPlayer() || !IsPositive()) && unitTarget->GetTypeId() == TYPEID_PLAYER)
     {
