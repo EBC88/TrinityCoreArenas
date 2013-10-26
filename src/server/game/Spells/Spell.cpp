@@ -5562,8 +5562,8 @@ SpellCastResult Spell::CheckCast(bool strict)
 	if (m_spellInfo->Id == 1022 || m_spellInfo->Id == 10278 || m_spellInfo->Id == 5599)
     {
 		if (m_caster)
-			if (!m_caster->CanFreeMove())
-			return SPELL_FAILED_NOT_IN_CONTROL;
+			if (!m_caster->CanFreeMove() && m_caster->GetTarget() != m_caster->GetGUID())
+				return SPELL_FAILED_NOT_IN_CONTROL;
     }
 	// 20130712 - Ryu Aura - No permitir mano de protección a objetivo, estando bajo CC.
 
