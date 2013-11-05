@@ -148,7 +148,10 @@ void ArenaTeamMgr::DistributeArenaPoints()
     // At first update all points for all team members
     for (ArenaTeamContainer::iterator teamItr = GetArenaTeamMapBegin(); teamItr != GetArenaTeamMapEnd(); ++teamItr)
         if (ArenaTeam* at = teamItr->second)
-            at->UpdateArenaPointsHelper(PlayerPoints);
+			// 20131105 - Ryu Aura - No entregar puntos para 5v5.
+			if (at->GetSlot() != 2)
+			// 20131105 - Ryu Aura - No entregar puntos para 5v5.
+				at->UpdateArenaPointsHelper(PlayerPoints);
 
     SQLTransaction trans = CharacterDatabase.BeginTransaction();
 

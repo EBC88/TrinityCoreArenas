@@ -21526,7 +21526,9 @@ uint32 Player::GetMaxPersonalArenaRatingRequirement(uint32 minarenaslot) const
     // the personal rating of the arena team must match the required limit as well
     // so return max[in arenateams](min(personalrating[teamtype], teamrating[teamtype]))
     uint32 max_personal_rating = 0;
-    for (uint8 i = minarenaslot; i < MAX_ARENA_SLOT; ++i)
+	// 20131105 - Ryu Aura - No permitir comprar items con índice de 5v5.
+    for (uint8 i = minarenaslot; i < MAX_ARENA_SLOT - 1; ++i)
+	// 20131105 - Ryu Aura - No permitir comprar items con índice de 5v5.
     {
         if (ArenaTeam* at = sArenaTeamMgr->GetArenaTeamById(GetArenaTeamId(i)))
         {
