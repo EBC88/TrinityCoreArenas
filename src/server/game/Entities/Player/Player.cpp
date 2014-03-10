@@ -10069,6 +10069,11 @@ uint32 Player::GetItemCount(uint32 item, bool inBankAlso, Item* skipItem) const
         if (Bag* pBag = GetBagByPos(i))
             count += pBag->GetItemCount(item, skipItem);
 
+	for (uint32 i = BUYBACK_SLOT_START; i < BUYBACK_SLOT_END; ++i)
+        if (Item* pItem = m_items[i])
+			if (item == pItem->GetEntry() && pItem->GetGUID() != skipItem->GetGUID())
+            count += 1;
+	
     if (skipItem && skipItem->GetTemplate()->GemProperties)
         for (uint8 i = EQUIPMENT_SLOT_START; i < INVENTORY_SLOT_ITEM_END; ++i)
             if (Item* pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
