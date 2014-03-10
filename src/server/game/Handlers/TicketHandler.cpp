@@ -34,6 +34,13 @@ void WorldSession::HandleGMTicketCreateOpcode(WorldPacket& recvData)
     if (sTicketMgr->GetStatus() == GMTICKET_QUEUE_STATUS_DISABLED)
         return;
 
+	if(!GetPlayer()->CanSpeak())
+	{
+		std::string timeStr = secsToTimeString(m_muteTime - time(NULL));
+		SendNotification(GetTrinityString(LANG_WAIT_BEFORE_SPEAKING), timeStr.c_str());
+        return;
+	}
+
     if (GetPlayer()->getLevel() < sWorld->getIntConfig(CONFIG_TICKET_LEVEL_REQ))
     {
         SendNotification(GetTrinityString(LANG_TICKET_REQ), sWorld->getIntConfig(CONFIG_TICKET_LEVEL_REQ));
