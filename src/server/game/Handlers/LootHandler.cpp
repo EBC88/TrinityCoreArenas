@@ -30,6 +30,7 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#include "Chat.h"
 
 void WorldSession::HandleAutostoreLootItemOpcode(WorldPacket& recvData)
 {
@@ -454,11 +455,28 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recvData)
     InventoryResult msg = target->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, item.itemid, item.count);
     if (item.follow_loot_rules && !item.AllowedForPlayer(target))
         msg = EQUIP_ERR_YOU_CAN_NEVER_USE_THAT_ITEM;
+
+	// Obtener información del item a entregar.
+	ItemTemplate const* itemProto = sObjectMgr->GetItemTemplate(item.itemid);
+	std::string NombreItem = itemProto? itemProto->Name1:"Item";
+
     if (msg != EQUIP_ERR_OK)
     {
         target->SendEquipError(msg, NULL, NULL, item.itemid);
         // send duplicate of error massage to master looter
         _player->SendEquipError(msg, NULL, NULL, item.itemid);
+
+		// Mandar alerta a todos los jugadores de la raid.        
+		if (Group* group = _player->GetGroup())
+        {
+			for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+			{
+				if (Player* member = itr->GetSource())
+				{
+					ChatHandler(member->GetSession()).PSendSysMessage("No se pudo entregar por ML [|Hitem:%i:0:0:0:0:0:0:0:80|h%s|h|r] a %s", item.itemid, NombreItem.c_str(), target->GetName().c_str());
+				}
+			}
+		}
         return;
     }
 
@@ -478,4 +496,16 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recvData)
 
     loot->NotifyItemRemoved(slotid);
     --loot->unlootedCount;
+
+	// Mandar alerta a todos los jugadores de la raid.
+		if (Group* group = _player->GetGroup())
+        {
+			for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+			{
+				if (Player* member = itr->GetSource())
+				{					
+					ChatHandler(member->GetSession()).PSendSysMessage("Entregado por ML [|Hitem:%i:0:0:0:0:0:0:0:80|h%s|h|r] a %s", item.itemid, NombreItem.c_str(), target->GetName().c_str());
+				}
+			}
+		}
 }
