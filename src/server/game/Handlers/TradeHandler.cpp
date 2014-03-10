@@ -29,6 +29,8 @@
 #include "SocialMgr.h"
 #include "Language.h"
 #include "AccountMgr.h"
+#include "Chat.h"
+#include "Group.h"
 
 void WorldSession::SendTradeStatus(TradeStatus status)
 {
@@ -427,8 +429,15 @@ void WorldSession::HandleAcceptTradeOpcode(WorldPacket& /*recvPacket*/)
         trader->GetSession()->SendTradeStatus(TRADE_STATUS_TRADE_ACCEPT);
 
         // test if item will fit in each inventory
-        hisCanCompleteTrade = (trader->CanStoreItems(myItems, TRADE_SLOT_TRADED_COUNT) == EQUIP_ERR_OK);
-        myCanCompleteTrade = (_player->CanStoreItems(hisItems, TRADE_SLOT_TRADED_COUNT) == EQUIP_ERR_OK);
+		InventoryResult hisResult = trader->CanStoreItems(myItems, TRADE_SLOT_TRADED_COUNT);
+		InventoryResult myResult = _player->CanStoreItems(hisItems, TRADE_SLOT_TRADED_COUNT);
+        hisCanCompleteTrade = (hisResult == EQUIP_ERR_OK);
+        myCanCompleteTrade = (myResult == EQUIP_ERR_OK);
+
+		if (myResult == EQUIP_ERR_CANT_CARRY_MORE_OF_THIS)
+				ChatHandler(trader->GetSession()).PSendSysMessage("El otro jugador no puede llevar otro de ese item.");
+		if (myResult == EQUIP_ERR_CANT_CARRY_MORE_OF_THIS)
+				ChatHandler(_player->GetSession()).PSendSysMessage("No puedes llevar otro de ese item.");
 
         clearAcceptTradeMode(myItems, hisItems);
 
@@ -668,6 +677,21 @@ void WorldSession::HandleInitiateTradeOpcode(WorldPacket& recvPacket)
     data << uint32(TRADE_STATUS_BEGIN_TRADE);
     data << uint64(_player->GetGUID());
     pOther->GetSession()->SendPacket(&data);
+
+	// Notificar a la banda que se ha iniciado comercio entre dos personajes de la banda.
+	if (_player->GetGroup() == pOther->GetGroup())
+	{
+		if (Group* group = _player->GetGroup())
+        {
+			for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+			{
+				if (Player* member = itr->GetSource())
+				{
+					ChatHandler(member->GetSession()).PSendSysMessage("%s ha iniciado comercio con %s", _player->GetName().c_str(), pOther->GetName().c_str());
+				}
+			}
+		}
+	}
 }
 
 void WorldSession::HandleSetTradeGoldOpcode(WorldPacket& recvPacket)
